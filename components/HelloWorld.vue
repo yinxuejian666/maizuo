@@ -1,7 +1,11 @@
 <template>
   <div id="box">
     <div>
-        <!-- <Head id="head"></Head> -->
+        <router-link to="/address">
+            <div id="address">
+                哈尔滨
+            </div>
+        </router-link>
         <Swipe id="swipe"></Swipe>
         <Content id="content"></Content>
     </div>  
@@ -77,12 +81,26 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
-#head{
+#address{
+    height: 20px;
+    width: 60px;
+    /* text-align: center; */
+    font-size: 18px;
+    background: url(../assets/arrow-down.png) no-repeat right center #c3c3c3;
+    background-size: 15px;
+    border-radius: 16px;
+    color: white;
+    background-color:rgba(0 , 0, 0 ,0.5);
+    position: absolute;
+    z-index: 100;
+    top: 20px;
+    left: 15px;
+}
+/* #head{
   width: 100%;
   height: 40px;
   background: lemonchiffon;
-}
+} */
 #swipe{
   width: 100%;
   /* height: 120px; */

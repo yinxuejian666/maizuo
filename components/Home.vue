@@ -34,8 +34,16 @@
     </div>
 </template>
 <script>
+// import getcity from '../untils/getCity'
 export default {
-    
+    // watch: {
+    //     $route:{
+    //         handler(){
+    //             this.getcity()
+    //         },
+    //         deep:true
+    //     }
+    // },
 }
 </script>
 <style scoped>

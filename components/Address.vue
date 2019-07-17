@@ -6,18 +6,18 @@
         </div>
         
         <div id="search">
-        <input :class='[style]' @click="goShort" type="text" placeholder="输入城市名或拼音" >
+        <input @keyup="searchcity" v-model="search" :class='[style]' @click="goShort" type="text" placeholder="输入城市名或拼音" >
         <p :class="[styles]" @click="goSearch">取消</p>
         </div>
        
         
         
-        <mt-index-list>
+        <mt-index-list v-if="where">
 
             <div id="city">
             <div>
                 <p>GPS定位你所在的城市</p>
-                <div>定位失败</div>
+                <div @click="getCity">{{LocationCity}}</div>
             </div>
             <div>
                 <p>热门城市</p>
@@ -30,11 +30,19 @@
             <mt-index-section v-for="(item,index) in arr" :index='item.index' :key="index">
                 <mt-cell v-for="(place,num) in item.list" :title="item.list[num]" :key="num"></mt-cell>
             </mt-index-section>                             
-        </mt-index-list> 
-            
+        </mt-index-list>
+        
+            <ul id="herecity" v-if="here">
+                <li v-for="(item,index) in items" :key="index">{{item.name}}</li>
+            </ul>
+        
+           
     </div>
 </template>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6fLExyGR6LujluhIvmzeRtqUfRfzlOWh"></script>
 <script>
+import {MP} from '../untils/map'
+
 import addresstoll from '@/untils/addressTolls'  
 export default {
     data() {
@@ -42,14 +50,71 @@ export default {
            style:'short',
            styles:'change',
            arr:[],
-           hotcity:[]
+           list:[],
+           hotcity:[],
+           LocationCity:"正在定位",
+           where:'false',
+           here:'',
+           search:''
         }
     },
+    computed: {
+
+        //过滤方法
+
+        items: function() {
+
+            var _search = this.search;
+
+            if (_search) {
+
+                //不区分大小写处理
+
+                var reg = new RegExp(_search, 'ig')
+
+                //es6 filter过滤匹配，有则返回当前，无则返回所有
+
+                return this.list.filter((item)=> {
+
+                    //匹配所有字段
+                    
+                    // return Object.keys(item).some((key)=> {
+
+                    //      return item[key].match(reg);
+
+                    // })
+
+                    //匹配某个字段
+
+                     return item.pinyin.match(reg);
+
+                })
+
+            };
+
+            return this.list;
+
+        }
+
+    },
+
+
+
+ 
+
     mounted(){
         this.getAddresslist()
-       
+        
+        this.$nextTick(function(){
+
+            var _this = this;
+
+            MP(_this.ak).then(BMap => {
+                this.city()
+            })
+        })//解决BMap未定义问题
     },
-      
+   
     methods: {
        getAddresslist(){
            this.Axios({
@@ -57,26 +122,87 @@ export default {
            }).then((res)=>{
                this.arr = addresstoll(res.data.cityList)
                 console.log(res.data.cityList)
+                // console.log(this.arr)
                this.hotcity =  res.data.cityList.filter((item)=>{return item.isHot==1})
-                console.log(this.hotcity)
-           })
+               
+                this.list = res.data.cityList
+
+                // console.log(this.findcity);
+          })
        },
        goSearch(){
            this.styles = 'changes'
            this.style = 'long'
+           this.where='true'
+           this.here=''
+           this.search=''
+       }, 
+       searchcity(){
+             if(!this.search==''){
+                this.where=''
+                this.here='true'
+               console.log(this.items)
+            }else{
+                this.where='true'
+                this.here=''
+            }
        },
        goShort(){
            this.style = 'short'
            this.styles = 'change'
+          
        },
        back(){
            this.$router.push('/helloworld')
-       }
-    },
+       },
+       city(){    //定义获取城市方法
 
+            const geolocation = new BMap.Geolocation();
+
+            var _this = this
+
+            geolocation.getCurrentPosition(function getinfo(position){
+
+                let city = position.address.city;             //获取城市信息
+
+                let province = position.address.province;    //获取省份信息
+
+                _this.LocationCity = city
+
+            }, function(e) {
+
+                _this.LocationCity = "定位失败"
+
+            }, {provider: 'baidu'});		
+
+        },
+        getCity(){
+            this.city()
+        }
+
+    }
 }
+
+
+    
+
+
 </script>
 <style scoped>
+    #herecity li{
+        border-bottom: 1px dashed black;
+        padding: 10px;
+    }
+    #herecity{
+        position: absolute;
+        top: 90px;
+        /* display: flex;
+        flex-direction: column; */
+        overflow: auto;
+        /* z-index: -100; */
+        height: 85%;
+        width: 100%;
+    }
     li{
         list-style: none;
     }
@@ -156,6 +282,8 @@ export default {
     }
     #box{
         font-family: 'bcd';
+        height: 100%;
+        
     }
     #search{
         height: 40px;
@@ -184,7 +312,7 @@ export default {
         width: 100%;
         display: flex;
         position:fixed;
-        z-index: 100;
+        /* z-index: 100; */
     }
     .el-icon-close{
         height: 50px;

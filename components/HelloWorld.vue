@@ -3,7 +3,7 @@
     <div>
         <router-link to="/address">
             <div id="address">
-                哈尔滨
+               {{city}}
             </div>
         </router-link>
         <Swipe id="swipe"></Swipe>
@@ -46,7 +46,8 @@ export default {
   
     data() {
         return {
-          flimdetail:[] 
+          flimdetail:[],
+          city:''
         }
     },
    watch: {
@@ -60,6 +61,9 @@ export default {
     },//监听 解决选项卡不切换
     mounted() {
         this.getFlimdetail()
+        console.log(this.$route.query.id);
+        
+        this.city = localStorage.getItem('nowcity')
     },
     methods: {
         getFlimdetail(type='1'){
@@ -83,7 +87,7 @@ export default {
 <style scoped>
 #address{
     height: 20px;
-    width: 60px;
+    width: 80px;
     /* text-align: center; */
     font-size: 18px;
     background: url(../assets/arrow-down.png) no-repeat right center #c3c3c3;

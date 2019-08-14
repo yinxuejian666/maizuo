@@ -1,7 +1,7 @@
 <template>
     <div id="cinema_">
       <div id="head">
-            <div>哈尔滨<span class="el-icon-arrow-down"></span></div>
+            <router-link tag="div" to="/address">{{city}}<span class="el-icon-arrow-down"></span></router-link>
             <div>影院</div>
             <div class="el-icon-search"></div>
         </div>
@@ -69,11 +69,13 @@ export default {
     data() {
         return {
           cinemaList:[],
-          cinemaList1:[] 
+          cinemaList1:[],
+          city:''
         }
     },
     mounted() {
         this.getCinema()
+        this.city = localStorage.getItem('nowcity')
     },
     methods: {
         getCinema(){

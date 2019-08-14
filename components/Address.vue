@@ -28,12 +28,12 @@
             </div>
 
             <mt-index-section v-for="(item,index) in arr" :index='item.index' :key="index">
-                <mt-cell v-for="(place,num) in item.list" :title="item.list[num]" :key="num"></mt-cell>
+               <mt-cell v-for="(place,num) in item.list" :title="item.list[num]" :key="num"   @click.native="getCityId(item.list[num])"></mt-cell>
             </mt-index-section>                             
         </mt-index-list>
         
             <ul id="herecity" v-if="here">
-                <li v-for="(item,index) in items" :key="index">{{item.name}}</li>
+                <router-link to="/helloworld" tag="li" v-for="(item,index) in items" :key="index">{{item.name}}</router-link> 
             </ul>
         
            
@@ -104,7 +104,10 @@ export default {
 
     mounted(){
         this.getAddresslist()
-        
+        setTimeout(()=>{
+            this.LocationCity = localStorage.getItem("cityname")
+        },500)
+        // console.log(this.LocationCity)
         this.$nextTick(function(){
 
             var _this = this;
@@ -116,6 +119,12 @@ export default {
     },
    
     methods: {
+        getCityId(num){
+            console.log(num);
+            this.$router.push({path:'/helloworld'})
+            localStorage.removeItem('nowcity')
+            localStorage.setItem('nowcity',num)
+        },
        getAddresslist(){
            this.Axios({
                url:'https://www.easy-mock.com/mock/5cd62f927f8f72433eeaa0b9/api/city/getList'
@@ -126,7 +135,7 @@ export default {
                this.hotcity =  res.data.cityList.filter((item)=>{return item.isHot==1})
                
                 this.list = res.data.cityList
-
+                console.log(this.list);
                 // console.log(this.findcity);
           })
        },
@@ -135,7 +144,7 @@ export default {
            this.style = 'long'
            this.where='true'
            this.here=''
-           this.search=''
+           this.search20=''
        }, 
        searchcity(){
              if(!this.search==''){
@@ -153,7 +162,8 @@ export default {
           
        },
        back(){
-           this.$router.push('/helloworld')
+           this.$router.push({path:'/helloworld',query:{id:this.LocationCity}})
+           localStorage.setItem('nowcity',this.LocationCity)
        },
        city(){    //定义获取城市方法
 
@@ -167,7 +177,11 @@ export default {
 
                 let province = position.address.province;    //获取省份信息
 
-                _this.LocationCity = city
+                // _this.LocationCity = city
+
+                localStorage.setItem("cityname",city)
+
+                this.LocationCity = localStorage.getItem("cityname")
 
             }, function(e) {
 
@@ -189,6 +203,10 @@ export default {
 
 </script>
 <style scoped>
+    a{
+        text-decoration: none;
+        color: black;
+    }
     #herecity li{
         border-bottom: 1px dashed black;
         padding: 10px;

@@ -2,7 +2,7 @@
     <div id="box">
        <div id="head">
          <div><img src="../assets/-tab-mine.png" alt="">
-         <p>立即登录</p>
+         <p @click="log">{{msg}}</p>
          </div>  
        </div>
        <div id="buylist">
@@ -29,9 +29,34 @@
 
 // import Foot from './Foot'
 export default {
+    data() {
+        return {
+            msg:"立即登录"
+        }
+    },
     components:{
-        // Foot
-    }
+       
+    },
+    mounted() {
+         this.changebtn()
+    },
+    methods: {
+        log(){
+            if(localStorage.getItem("sessionToken")){
+                localStorage.removeItem("sessionToken")
+                this.$router.push('/login')
+            }else{
+                this.$router.push('/login')
+            }
+        },
+        changebtn(){
+            if(localStorage.getItem("sessionToken")){
+                this.msg = '退出登录'
+            }else{
+                this.msg = '立即登录'
+            }
+        }
+    },
 }
 </script>
 <style scoped>

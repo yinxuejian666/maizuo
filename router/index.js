@@ -5,7 +5,10 @@ import Cinema_ from '@/components/Cinema_'
 import Foot from '@/components/Foot'
 import myApp from '@/components/myApp'
 import Home from '@/components/Home'
+import Login from '@/components/Login'
 import Address from '@/components/Address'
+
+
 
 
 
@@ -39,6 +42,11 @@ export default new Router({
     {
       path:'/address',
       component:Address
+    },
+    {
+      path:'/login',
+      name:'Login',
+      component:Login
     }
         
    
